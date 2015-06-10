@@ -11,13 +11,15 @@ var users = require('./routes/users');
 var app = express();
 
 const
-	redisClient  = require('redis').createClient()
+	redisClient  = require('./setup/redisClient')
 	, session    = require('express-session')
 	, RedisStore = require('connect-redis')(session)
 	, passport   = require('passport')
 	, authRoute  = require('./routes/auth');
 
 require('./setup/passport')();
+var acl = require('./setup/acl');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,8 +32,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-	resave : true,
-	saveUninitialized : true,
+	resave : false,
+	saveUninitialized : false,
 	secret : '4FRlUu7Jledo1JOp6otFhCIFddUHEY2m',
 	store : new RedisStore({
 		client : redisClient
