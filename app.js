@@ -18,8 +18,7 @@ const
 	, authRoute  = require('./routes/auth');
 
 require('./setup/passport')();
-var acl = require('./setup/acl');
-
+require('./setup/acl');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

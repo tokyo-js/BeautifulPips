@@ -4,7 +4,8 @@ const
 	, passport = require('passport');
 
 router.get('/google/:return?', passport.authenticate('google-openidconnect', {
-	successRedirect : '/'
+	successRedirect : '/',
+	scope : ['email']
 }))
 
 router.get('/logout', function (req,res) {
