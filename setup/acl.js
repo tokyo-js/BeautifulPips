@@ -14,6 +14,4 @@ acl.allow([
 	}
 ]);
 
-acl.addUserRoles('109107447980707024405', 'member');
-
 module.exports = acl;

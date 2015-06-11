@@ -15,22 +15,30 @@ const
 	, session    = require('express-session')
 	, RedisStore = require('connect-redis')(session)
 	, passport   = require('passport')
-	, authRoute  = require('./routes/auth');
+	, authRoute  = require('./routes/auth')
+	, mongoose   = require('mongoose')
+
+mongoose.connect('mongodb://localhost:27017/pips');
+mongoose.connection.on('error', function (err) {
+	console.log(err);
+});
 
 require('./setup/passport')();
 require('./setup/acl');
+// require('./setup/restful-apis')(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
+	name : 'beautifulpips',
 	resave : false,
 	saveUninitialized : false,
 	secret : '4FRlUu7Jledo1JOp6otFhCIFddUHEY2m',
@@ -45,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/auth', authRoute);
+app.use('/api', require('./setup/restful-apis'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
