@@ -5,14 +5,15 @@ const
 	, UserSchema = require('../models/mongoose.User').schema
 	, express = require('express')
 	, router = express.Router()
-	, User = restful.model('User', UserSchema).methods(['get', 'post', 'put', 'delete']);
+	, User = restful.model('User', UserSchema).methods(['get', 'post', 'put', 'delete'])
+	, onlyCanModifyOwnStuff = function (req, res, next) {
+		if (req.user && req.user._id === req.params.id) {
+			return next();
+		}
+		return next(Error('Not authorized'));
+	};
 
-User.before('put', function (req, res, next) {
-	if (req.params.id == '5579614189ef6f1034d562c2') {
-		return next();
-	}
-	return next('wrong');
-});
+User.before('put', onlyCanModifyOwnStuff);
 
 User.register(router, '/users');
 

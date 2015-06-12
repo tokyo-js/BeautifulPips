@@ -3,15 +3,21 @@
 const
 	mongoose = require('mongoose')
 	, UserSchema = mongoose.Schema({
-		id : {
-			type : String,
-			required : true
-		},
 		email : {
 			type : String,
 			required : true
+		},
+		google : {
+			id : String,
+			email : String,
+			name : String
 		}
 	});
+
+UserSchema.index({ 'id' : 1 });
+UserSchema.index({ 'email' : 1 });
+UserSchema.index({ 'google.id' : 1 });
+UserSchema.index({ 'google.email' : 1 });
 
 module.exports = {
 	schema : UserSchema,

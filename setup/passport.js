@@ -1,14 +1,16 @@
 module.exports = function () {
+	'use strict';
 	const
 		passport = require('passport')
-		, GoogleStrategy = require('passport-google-openidconnect').Strategy;
+		, GoogleStrategy = require('passport-google-openidconnect').Strategy
+		, User = require('../models/mongoose.User').model;
 
 	passport.serializeUser(function (user, done) {
 		done(null, user);
 	});
 
-	passport.deserializeUser(function (id, done) {
-		done(null, id);
+	passport.deserializeUser(function (user, done) {
+		done(null, user);
 	});
 
 	passport.use(new GoogleStrategy({
@@ -16,9 +18,23 @@ module.exports = function () {
 		clientSecret : 'Mlm-YqHgDkc2v1BiCcQL8wZ0',
 		callbackURL : 'http://localhost:3000/auth/google/return'
 	}, function (iss, sub, profile, accessToken, refreshToken, done) {
-		done(null, {
-			id : sub,
-			email : profile._json.email || ''
+		User.findOne({ 'google.id' : profile.id }, function (err, user) {
+			if (err) {
+				return done(err);
+			}
+			if (!user) {
+				user = new User();
+			}
+			user.email = profile._json.email;
+			user.google.id = profile.id;
+			user.google.email = profile._json.email;
+			user.google.name = profile.displayName;
+			user.save(function (err) {
+				if (err) {
+					throw err;
+				}
+				done(null, user);
+			});
 		});
 	}));
 }
