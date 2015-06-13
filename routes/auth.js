@@ -3,10 +3,15 @@ const
 	, router = express.Router()
 	, passport = require('passport');
 
-router.get('/google/:return?', passport.authenticate('google-openidconnect', {
+router.get('/google/:return?', passport.authenticate('google', {
 	successRedirect : '/',
 	scope : ['email']
-}))
+}));
+
+router.get('/facebook/:return?', passport.authenticate('facebook', {
+	successRedirect : '/',
+	scope : ['email']
+}));
 
 router.get('/logout', function (req,res) {
 	req.logout();

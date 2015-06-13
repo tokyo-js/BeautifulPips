@@ -11,6 +11,11 @@ const
 			id : String,
 			email : String,
 			name : String
+		},
+		facebook : {
+			id : String,
+			email : String,
+			name : String
 		}
 	});
 
