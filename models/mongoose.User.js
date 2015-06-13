@@ -14,6 +14,10 @@ const
 		}
 	});
 
+UserSchema.virtual('user_id').get(function () {
+	return this._id;
+});
+
 UserSchema.index({ 'id' : 1 });
 UserSchema.index({ 'email' : 1 });
 UserSchema.index({ 'google.id' : 1 });

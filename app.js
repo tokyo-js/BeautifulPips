@@ -22,6 +22,9 @@ mongoose.connect('mongodb://localhost:27017/pips');
 mongoose.connection.on('error', function (err) {
 	console.log(err);
 });
+mongoose.connection.on('connected', function () {
+	console.log('Mongodb is ready');
+});
 
 require('./setup/passport')();
 require('./setup/acl');
