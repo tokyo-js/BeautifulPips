@@ -4,6 +4,7 @@ module.exports = function () {
 		passport = require('passport')
 		, GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 		, FacebookStrategy = require('passport-facebook').Strategy
+		, LocalStrategy = require('passport-local').Strategy
 		, User = require('../models/mongoose.User').model;
 
 	passport.serializeUser(function (user, done) {
@@ -20,24 +21,6 @@ module.exports = function () {
 		callbackURL : 'http://localhost:3000/auth/google/return',
 		passReqToCallback : true
 	}, function (req, accessToken, refreshToken, profile, done) {
-		// User.findOne({ 'google.id' : profile.id }, function (err, user) {
-		// 	if (err) {
-		// 		return done(err);
-		// 	}
-		// 	if (!user) {
-		// 		user = new User();
-		// 	}
-		// 	user.email = profile._json.email;
-		// 	user.google.id = profile.id;
-		// 	user.google.email = profile._json.email;
-		// 	user.google.name = profile.displayName;
-		// 	user.save(function (err) {
-		// 		if (err) {
-		// 			throw err;
-		// 		}
-		// 		done(null, user);
-		// 	});
-		// });
 		if (!req.user) {
 			User.findOne({ 'google.id' : profile.id }, function (err, user) {
 				if (err) {
@@ -122,6 +105,54 @@ module.exports = function () {
 				});
 			});
 		}
-
 	}));
+
+	passport.use(new LocalStrategy({
+		usernameField : 'email',
+		passwordField : 'password',
+		passReqToCallback : true
+	}, function (req, email, password, done) {
+		if (!req.user) {
+			User.findOne({ 'local.email' : email }, function (err, user) {
+				if (err) {
+					return done(err);
+				}
+				if (!user) {
+					user = new User();
+					user.email = email;
+					user.local.email = email;
+					user.local.password = user.hashPassword(password);
+					user.save(function (err) {
+						if (err) {
+							throw err;
+						}
+						done(null, user);
+					});
+				} else {
+					if (user.validPassword(password)) {
+						done(null, user);	
+					} else {
+						done(null, false);
+					}
+				}
+			});
+		} else {
+			User.findById(req.user._id, function (err, user) {
+				if (err) {
+					return done(err);
+				}
+				if (!user) {
+					return done('Ghost user?');
+				}
+				user.local.email = email;
+				user.local.password = user.hashPassword(password);
+				user.save(function (err) {
+					if (err) {
+						throw err;
+					}
+					done(null, user);
+				});
+			});
+		}
+	}))	
 }

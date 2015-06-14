@@ -13,6 +13,13 @@ router.get('/facebook/:return?', passport.authenticate('facebook', {
 	scope : ['email']
 }));
 
+router.get('/local', function (req, res) {
+	res.render('local', {});
+});
+router.post('/local', passport.authenticate('local', {
+	successRedirect : '/'
+}));
+
 router.get('/logout', function (req,res) {
 	req.logout();
 	res.redirect('/');
