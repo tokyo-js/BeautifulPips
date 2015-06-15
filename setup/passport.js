@@ -41,23 +41,7 @@ module.exports = function () {
 				});
 			});
 		} else {
-			User.findById(req.user._id, function (err, user) {
-				if (err) {
-					return done(err);
-				}
-				if (!user) {
-					return done('Ghost user?');
-				}
-				user.google.id = profile.id;
-				user.google.email = profile.emails.length > 0 && profile.emails[0].value;
-				user.google.name = profile.displayName;
-				user.save(function (err) {
-					if (err) {
-						throw err;
-					}
-					done(null, user);
-				});
-			});
+			done(null, req.user);
 		}
 	}));
 
@@ -87,23 +71,7 @@ module.exports = function () {
 				});
 			});
 		} else {
-			User.findById(req.user._id, function (err, user) {
-				if (err) {
-					return done(err);
-				}
-				if (!user) {
-					return done('Ghost user?');
-				}
-				user.facebook.id = profile.id;
-				user.facebook.email = profile.emails.length > 0 && profile.emails[0].value;
-				user.facebook.name = profile.displayName;
-				user.save(function (err) {
-					if (err) {
-						throw err;
-					}
-					done(null, user);
-				});
-			});
+			done(null, req.user);
 		}
 	}));
 
@@ -137,22 +105,7 @@ module.exports = function () {
 				}
 			});
 		} else {
-			User.findById(req.user._id, function (err, user) {
-				if (err) {
-					return done(err);
-				}
-				if (!user) {
-					return done('Ghost user?');
-				}
-				user.local.email = email;
-				user.local.password = user.hashPassword(password);
-				user.save(function (err) {
-					if (err) {
-						throw err;
-					}
-					done(null, user);
-				});
-			});
+			done(null, req.user);
 		}
 	}))	
 }
